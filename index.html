@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WanderOS Inventory Growth Autopilot</title>
+  <meta name="description" content="A prompt-driven network of AI agents that finds, resolves, enriches, and converts homeowners into signed management opportunities for property managers." />
+  <style>
+    :root {
+      --bg: #050814;
+      --bg-2: #0b1021;
+      --surface: rgba(13, 18, 35, 0.72);
+      --surface-strong: rgba(17, 24, 46, 0.9);
+      --surface-soft: rgba(255, 255, 255, 0.04);
+      --text: #eef2ff;
+      --muted: #9aa5c6;
+      --line: rgba(255, 255, 255, 0.1);
+      --line-strong: rgba(255, 255, 255, 0.18);
+      --cyan: #7dd3fc;
+      --blue: #4f8cff;
+      --purple: #a78bfa;
+      --pink: #fb7185;
+      --green: #4ade80;
+      --orange: #fbbf24;
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+      --radius: 24px;
+      --radius-lg: 32px;
+      --container: min(1200px, calc(100vw - 48px));
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(79, 140, 255, 0.22), transparent 28%),
+        radial-gradient(circle at 90% 14%, rgba(167, 139, 250, 0.2), transparent 24%),
+        radial-gradient(circle at 75% 78%, rgba(125, 211, 252, 0.14), transparent 26%),
+        linear-gradient(180deg, #040710 0%, #060a15 20%, #070c18 42%, #050812 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.7) 12%, rgba(0,0,0,0.75) 82%, transparent 100%);
+      pointer-events: none;
+      opacity: 0.48;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto auto -160px -120px;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(123, 92, 255, 0.28) 0%, rgba(123, 92, 255, 0.08) 42%, transparent 72%);
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: var(--container);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(180deg, rgba(5, 8, 20, 0.88), rgba(5, 8, 20, 0.6));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .topbar-inner {
+      width: var(--container);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 16px 0;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-mark {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      box-shadow: 0 0 20px rgba(125, 211, 252, 0.9);
+    }
+
+    .topnav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .topnav a {
+      color: var(--muted);
+      font-size: 0.95rem;
+      padding: 8px 14px;
+      border-radius: 999px;
+      transition: 180ms ease;
+    }
+
+    .topnav a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .hero {
+      padding: 72px 0 56px;
+      position: relative;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--cyan), transparent);
+    }
+
+    h1, h2, h3, h4, h5, p { margin: 0; }
+
+    .hero h1 {
+      font-size: clamp(3rem, 5.8vw, 5.4rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      max-width: 760px;
+    }
+
+    .hero-copy > p {
+      margin-top: 22px;
+      color: #c1c8e0;
+      font-size: 1.12rem;
+      max-width: 720px;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 28px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.96rem;
+      border: 1px solid transparent;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(79, 140, 255, 0.2), rgba(167, 139, 250, 0.22));
+      border-color: rgba(125, 211, 252, 0.24);
+      box-shadow: 0 16px 40px rgba(79, 140, 255, 0.18);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.1);
+      color: var(--muted);
+    }
+
+    .stat-strip {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .glass {
+      background: linear-gradient(180deg, rgba(15, 21, 40, 0.86), rgba(10, 14, 28, 0.66));
+      border: 1px solid rgba(255,255,255,0.09);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card {
+      padding: 18px 20px;
+      border-radius: 18px;
+    }
+
+    .stat-label {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .stat-card p {
+      color: var(--text);
+      font-size: 0.98rem;
+      line-height: 1.45;
+    }
+
+    .hero-panel {
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      min-height: 640px;
+    }
+
+    .hero-panel::before {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      right: -110px;
+      top: -90px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(125, 211, 252, 0.36), rgba(125, 211, 252, 0.08) 35%, transparent 70%);
+      filter: blur(10px);
+      pointer-events: none;
+    }
+
+    .panel-topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 12px;
+    }
+
+    .panel-title {
+      font-size: 0.88rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .panel-chip {
+      font-size: 0.82rem;
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+
+    .prompt-box {
+      border-radius: 22px;
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .prompt-box::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 22px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(125,211,252,0.35), rgba(167,139,250,0.16), transparent 65%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .prompt-label {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--cyan);
+      margin-bottom: 12px;
+    }
+
+    .prompt-text {
+      font-size: 1.08rem;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .mode-card {
+      padding: 14px 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .mode-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.96rem;
+    }
+
+    .mode-card span {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+      display: block;
+    }
+
+    .network-card {
+      padding: 20px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(8, 12, 24, 0.88), rgba(15, 20, 37, 0.76));
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .network-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .network-head strong {
+      font-size: 1rem;
+    }
+
+    .network-head span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .network-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .network-node {
+      position: relative;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      min-height: 94px;
+    }
+
+    .network-node small {
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--cyan);
+      font-size: 0.7rem;
+      margin-bottom: 10px;
+    }
+
+    .network-node span {
+      display: block;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .network-footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 16px;
+      color: #cfd6ed;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 0.84rem;
+    }
+
+    .section {
+      padding: 42px 0 26px;
+      position: relative;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 0.72fr) minmax(0, 0.28fr);
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 26px;
+    }
+
+    .section-heading h2 {
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 420px;
+      justify-self: end;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .comparison-card {
+      border-radius: 28px;
+      padding: 24px;
+      min-height: 280px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .comparison-card h3 {
+      font-size: 1.35rem;
+      margin-bottom: 10px;
+    }
+
+    .comparison-card p {
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .comparison-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .comparison-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: #d8def3;
+      font-size: 0.98rem;
+    }
+
+    .comparison-item i {
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-style: normal;
+      font-size: 0.82rem;
+      margin-top: 1px;
+    }
+
+    .comparison-card.before i { background: rgba(251, 113, 133, 0.14); color: var(--pink); }
+    .comparison-card.after i { background: rgba(74, 222, 128, 0.16); color: var(--green); }
+
+    .phase-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .phase-card {
+      padding: 20px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 166px;
+    }
+
+    .phase-card strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .phase-card span {
+      color: var(--muted);
+      font-size: 0.94rem;
+      display: block;
+    }
+
+    .agent-shell {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .agent-rail {
+      position: sticky;
+      top: 88px;
+      border-radius: 30px;
+      padding: 22px;
+    }
+
+    .rail-top {
+      margin-bottom: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .rail-top strong {
+      display: block;
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .rail-top span {
+      color: var(--muted);
+      font-size: 0.95rem;
+      display: block;
+    }
+
+    .rail-links {
+      display: grid;
+      gap: 8px;
+    }
+
+    .rail-link {
+      padding: 12px 14px;
+      border-radius: 16px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      background: transparent;
+      transition: 180ms ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rail-link::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--cyan), var(--purple));
+      opacity: 0;
+      transition: 180ms ease;
+    }
+
+    .rail-link:hover,
+    .rail-link.active {
+      color: var(--text);
+      border-color: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .rail-link.active::before { opacity: 1; }
+
+    .agent-card {
+      border-radius: 30px;
+      padding: 26px;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .agent-card::before {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(79,140,255,0.18), rgba(79,140,255,0.05) 46%, transparent 72%);
+      pointer-events: none;
+    }
+
+    .agent-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .agent-title {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      min-width: 0;
+    }
+
+    .agent-number {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(125,211,252,0.18), rgba(167,139,250,0.16));
+      border: 1px solid rgba(255,255,255,0.1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.02rem;
+      color: var(--text);
+      flex: 0 0 auto;
+    }
+
+    .agent-heading {
+      min-width: 0;
+    }
+
+    .agent-heading .kicker {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .agent-heading h3 {
+      font-size: clamp(1.45rem, 2vw, 2rem);
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .agent-heading p {
+      color: #d3daf1;
+      max-width: 780px;
+    }
+
+    .pm-touch {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+
+    .pm-touch i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 12px rgba(74,222,128,0.9);
+    }
+
+    .agent-columns {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .agent-block {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .agent-block h4 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .agent-block ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .agent-block li {
+      color: #d8def3;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .agent-block li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.7em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+    }
+
+    .agent-note {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(79,140,255,0.08), rgba(167,139,250,0.06));
+      border: 1px solid rgba(125,211,252,0.12);
+      color: #dfe5f7;
+    }
+
+    .agent-note strong {
+      color: #ffffff;
+    }
+
+    .agent-tags {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .callout {
+      padding: 24px;
+      border-radius: 28px;
+      margin-bottom: 20px;
+    }
+
+    .callout p {
+      color: #d8def3;
+      font-size: 1.03rem;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .step-card {
+      padding: 20px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 220px;
+      position: relative;
+    }
+
+    .step-number {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--cyan);
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .step-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      line-height: 1.15;
+    }
+
+    .step-card p {
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .source-grid,
+    .deploy-grid,
+    .guardrail-grid,
+    .metric-grid,
+    .delta-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .source-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin-top: 18px;
+    }
+
+    .source-card,
+    .deploy-card,
+    .guardrail-card,
+    .metric-card,
+    .delta-card {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 150px;
+    }
+
+    .source-card h3,
+    .deploy-card h3,
+    .guardrail-card h3,
+    .metric-card h3,
+    .delta-card h3 {
+      font-size: 1.02rem;
+      margin-bottom: 10px;
+    }
+
+    .source-card p,
+    .deploy-card p,
+    .guardrail-card p,
+    .metric-card p,
+    .delta-card p {
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .autopilot-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .prompt-panel,
+    .autopilot-card {
+      border-radius: 28px;
+      padding: 24px;
+    }
+
+    .prompt-panel {
+      position: sticky;
+      top: 88px;
+    }
+
+    .prompt-panel h3,
+    .autopilot-card h3 {
+      font-size: 1.35rem;
+      margin-bottom: 12px;
+    }
+
+    .prompt-panel p,
+    .autopilot-card p {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .prompt-bullets {
+      display: grid;
+      gap: 10px;
+    }
+
+    .prompt-bullets div {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #d8def3;
+      font-size: 0.95rem;
+    }
+
+    .deploy-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 10px;
+    }
+
+    .modes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .modes-grid .mode-card {
+      min-height: 160px;
+      padding: 20px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .guardrail-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 14px;
+    }
+
+    .metric-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 18px;
+    }
+
+    .delta-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 18px;
+    }
+
+    .footer-card {
+      margin: 18px 0 70px;
+      padding: 26px;
+      border-radius: 30px;
+    }
+
+    .footer-card h2 {
+      font-size: clamp(1.9rem, 3vw, 2.8rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      margin-bottom: 14px;
+    }
+
+    .footer-card p {
+      color: #d2d8ec;
+      font-size: 1.02rem;
+      max-width: 820px;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1180px) {
+      .hero-grid,
+      .section-heading,
+      .agent-shell,
+      .autopilot-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .section-heading p { justify-self: start; max-width: 720px; }
+      .agent-rail,
+      .prompt-panel { position: relative; top: 0; }
+      .source-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .guardrail-grid,
+      .delta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 960px) {
+      .stat-strip,
+      .comparison-grid,
+      .phase-grid,
+      .agent-columns,
+      .pipeline,
+      .source-grid,
+      .metric-grid,
+      .deploy-grid,
+      .guardrail-grid,
+      .delta-grid,
+      .mode-grid,
+      .modes-grid { grid-template-columns: 1fr; }
+
+      .topbar-inner { align-items: flex-start; }
+      .topnav { justify-content: flex-start; }
+      .hero-panel { min-height: auto; }
+      .source-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner { padding: 14px 0; }
+      .hero { padding-top: 44px; }
+      .container { width: min(100vw - 28px, 1200px); }
+      .hero h1 { line-height: 0.98; }
+      .hero-panel,
+      .comparison-card,
+      .agent-card,
+      .callout,
+      .prompt-panel,
+      .autopilot-card,
+      .footer-card { padding: 18px; }
+      .agent-number { width: 48px; height: 48px; border-radius: 14px; }
+      .topnav a { padding-inline: 10px; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#top"><span class="brand-mark"></span><span>WanderOS Inventory Growth Autopilot</span></a>
+      <nav class="topnav" aria-label="Page navigation">
+        <a href="#overview">Overview</a>
+        <a href="#agents">Agents</a>
+        <a href="#data-engine">Data engine</a>
+        <a href="#autopilot">Autopilot</a>
+        <a href="#guardrails">Guardrails</a>
+        <a href="#metrics">Metrics</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="container hero-grid">
+        <div class="hero-copy reveal in">
+          <span class="eyebrow">Software 3.0 for property managers</span>
+          <h1>Tell WanderOS where you want more owners. The agents do the rest.</h1>
+          <p>
+            Property managers should not stitch together data vendors, MLS workflows, owner resolution, landing pages, ad accounts,
+            CRM automations, direct mail, and SDR follow-up by hand. WanderOS should feel like a goal layer: the PM provides the market,
+            budget, and guardrails, then an agent network finds likely owners, builds the assets, launches the outreach, books meetings,
+            and learns what converts.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#agents">Explore the agent network</a>
+            <a class="btn btn-secondary" href="#data-engine">Jump to the owner-enrichment engine</a>
+          </div>
+          <div class="stat-strip">
+            <div class="stat-card glass">
+              <div class="stat-label">Product thesis</div>
+              <p>Not a menu of manual marketing tools. One goal in, signed homes out.</p>
+            </div>
+            <div class="stat-card glass">
+              <div class="stat-label">Core wedge</div>
+              <p>Turn raw market supply into owner-resolved, channel-ready prospect lists automatically.</p>
+            </div>
+            <div class="stat-card glass">
+              <div class="stat-label">PM involvement</div>
+              <p>Minimal setup: prompt, geography, filters, spend caps, calendar destination, approval mode.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-panel glass reveal in">
+          <div class="panel-topline">
+            <div class="panel-title">Goal-driven control plane</div>
+            <div class="panel-chip">Observe · Approve · Autopilot</div>
+          </div>
+
+          <div class="prompt-box">
+            <div class="prompt-label">Example PM prompt</div>
+            <div class="prompt-text">
+              “I want to find more owners to manage vacation rentals in Destin, FL. Focus on premium 3–6 bedroom homes. Use a $4,000 monthly budget. Launch what you think will work best, book meetings directly on my calendar, and only ask me before sending contracts.”
+            </div>
+          </div>
+
+          <div class="mode-grid">
+            <div class="mode-card">
+              <strong>Observe</strong>
+              <span>Agents plan, score, and recommend — the PM decides what goes live.</span>
+            </div>
+            <div class="mode-card">
+              <strong>Approve</strong>
+              <span>Agents execute most work, but major launches and spend changes require review.</span>
+            </div>
+            <div class="mode-card">
+              <strong>Autopilot</strong>
+              <span>Agents run inside budget, claims, and compliance guardrails with exceptions only.</span>
+            </div>
+          </div>
+
+          <div class="network-card">
+            <div class="network-head">
+              <div>
+                <strong>From prompt to signed homes</strong>
+                <span>One system. Multiple specialists. One control center.</span>
+              </div>
+              <div class="pill">Goal layer</div>
+            </div>
+            <div class="network-grid">
+              <div class="network-node"><small>Plan</small><span>Goal Orchestrator</span></div>
+              <div class="network-node"><small>Find</small><span>Property Data &amp; Owner Enrichment</span></div>
+              <div class="network-node"><small>Prove</small><span>Proof Asset Agent</span></div>
+              <div class="network-node"><small>Acquire</small><span>Campaign Operator + Retargeting</span></div>
+              <div class="network-node"><small>Capture</small><span>Lifecycle / CRM Agent</span></div>
+              <div class="network-node"><small>Convert</small><span>Conversation / SDR + Sales Assist</span></div>
+            </div>
+            <div class="network-footer">
+              <span>Outcome: owner-resolved audiences, live campaigns, booked meetings, signed homes, and continuous learning.</span>
+              <div class="pill-row">
+                <span class="pill">MLS</span>
+                <span class="pill">Assessor / tax</span>
+                <span class="pill">Email</span>
+                <span class="pill">Meta / Google</span>
+                <span class="pill">Direct mail</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="overview">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div>
+            <span class="eyebrow">Why this matters</span>
+            <h2>Move from a disconnected tool stack to a true inventory growth operating system.</h2>
+          </div>
+          <p>
+            The opportunity is not just better lead gen. It is a hands-off system that helps a property manager add homes,
+            then turns those homes into more revenue across direct and OTA channels.
+          </p>
+        </div>
+
+        <div class="comparison-grid">
+          <div class="comparison-card glass before reveal">
+            <h3>How inventory growth usually works today</h3>
+            <p>Manual sourcing, fragmented tools, and too many operators standing between a market idea and real owner conversations.</p>
+            <div class="comparison-list">
+              <div class="comparison-item"><i>1</i><span>Buy or source market listing data, then manually compile STR and MLS inventory.</span></div>
+              <div class="comparison-item"><i>2</i><span>Resolve owners with parcel, assessor, or LandGlide-style workflows.</span></div>
+              <div class="comparison-item"><i>3</i><span>Enrich phones, emails, and mailing addresses through third-party services.</span></div>
+              <div class="comparison-item"><i>4</i><span>Build landing pages, ad creative, CRM flows, mail pieces, and call queues in separate tools.</span></div>
+              <div class="comparison-item"><i>5</i><span>Hope a team or agency coordinates the funnel well enough to close signed homes.</span></div>
+            </div>
+          </div>
+
+          <div class="comparison-card glass after reveal">
+            <h3>What WanderOS should feel like instead</h3>
+            <p>A prompt-driven goal layer where autonomous agents decompose the work, operate the channels, and only escalate the exceptions that matter.</p>
+            <div class="comparison-list">
+              <div class="comparison-item"><i>✓</i><span>The PM sets the market, budget, filters, and approval mode once.</span></div>
+              <div class="comparison-item"><i>✓</i><span>The system finds likely homes, resolves owners, enriches records, and scores the opportunity.</span></div>
+              <div class="comparison-item"><i>✓</i><span>Landing pages, retargeting, email nurture, direct mail, and SDR tasks are generated automatically.</span></div>
+              <div class="comparison-item"><i>✓</i><span>Every touchpoint lands in a dedicated owner CRM with instant follow-up and attribution.</span></div>
+              <div class="comparison-item"><i>✓</i><span>Budget shifts, weak channels, and proposal readiness are optimized continuously.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="phase-grid">
+          <div class="phase-card reveal"><strong>Plan</strong><span>Interpret the goal, select the owner segments, choose the channels, set spend caps, and establish approval points.</span></div>
+          <div class="phase-card reveal"><strong>Find</strong><span>Ingest STR supply and MLS listings, resolve direct owners, enrich the records, suppress bad matches, and score the best targets.</span></div>
+          <div class="phase-card reveal"><strong>Attract</strong><span>Create proof pages, creatives, nurture flows, ads, and mailers tuned to the market and owner segment.</span></div>
+          <div class="phase-card reveal"><strong>Convert</strong><span>Capture every lead in the CRM, respond instantly, book meetings, assemble proposals, and learn from every win or loss.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="agents">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div>
+            <span class="eyebrow">The agent network</span>
+            <h2>Each agent owns a specialized job. The PM experiences one system.</h2>
+          </div>
+          <p>
+            The differentiation is not a single feature. It is the orchestration layer that lets every agent do its work independently while preserving one coherent PM workflow.
+          </p>
+        </div>
+
+        <div class="agent-shell">
+          <aside class="agent-rail glass reveal">
+            <div class="rail-top">
+              <strong>Agent map</strong>
+              <span>Scroll the chapters to see how the stack finds and attracts homeowners with minimal PM input.</span>
+            </div>
+            <div class="rail-links">
+              <a class="rail-link" href="#agent-01">01 · Goal Orchestrator</a>
+              <a class="rail-link" href="#agent-02">02 · Property Data &amp; Enrichment</a>
+              <a class="rail-link" href="#agent-03">03 · Proof Asset Agent</a>
+              <a class="rail-link" href="#agent-04">04 · Campaign Operator</a>
+              <a class="rail-link" href="#agent-05">05 · Lifecycle / CRM Agent</a>
+              <a class="rail-link" href="#agent-06">06 · Conversation / SDR Agent</a>
+              <a class="rail-link" href="#agent-07">07 · Direct Mail Agent</a>
+              <a class="rail-link" href="#agent-08">08 · Sales Assist Agent</a>
+              <a class="rail-link" href="#agent-09">09 · Reporting &amp; Optimization</a>
+            </div>
+          </aside>
+
+          <div class="agent-content">
+            <article class="agent-card glass reveal" id="agent-01">
+              <div class="agent-top">
+                <div class="agent-title">
+                  <div class="agent-number">01</div>
+                  <div class="agent-heading">
+                    <span class="kicker">Plan</span>
+                    <h3>Goal Orchestrator</h3>
+                    <p>Translates one PM prompt into an execution plan: who to target, what channels to use, how to allocate budget, and where the system should request human approval.</p>
+                  </div>
+                </div>
+                <div class="pm-touch"><i></i>PM touch: setup only</div>
+              </div>
+              <div class="agent-columns">
+                <div class="agent-block">
+                  <h4>Automates</h4>
+                  <ul>
+                    <li>Interprets the market, owner segment, geography, budget, and property filters.</li>
+                    <li>Creates the recommended conversion path: data, asset, outreach, nurture, and close sequence.</li>
+                    <li>Chooses Observe, Approve, or Autopilot execution checkpoints.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Consumes</h4>
+                  <ul>
+                    <li>Goal prompt, brand assets, claims guardrails, calendar destination, spend caps.</li>
+                    <li>Historical performance data when available.</li>
+                    <li>Compliance rules for channel eligibility and approvals.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Hands off</h4>
+                  <ul>
+                    <li>Channel plan, audience priorities, initial budget allocation, and execution graph for downstream agents.</li>
+                    <li>Default approval thresholds and exception routing.</li>
+                    <li>A 30-day operating plan the PM can inspect without manually configuring the funnel.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="agent-note"><strong>Why it matters:</strong> this is what makes WanderOS feel like software 3.0 instead of a dashboard full of manual widgets.</div>
+              <div class="agent-tags"><span class="tag">Goal intake</span><span class="tag">Budgeting</span><span class="tag">Approval logic</span><span class="tag">Planning</span></div>
+            </article>
+
+            <article class="agent-card glass reveal" id="agent-02">
+              <div class="agent-top">
+                <div class="agent-title">
+                  <div class="agent-number">02</div>
+                  <div class="agent-heading">
+                    <span class="kicker">Find</span>
+                    <h3>Property Data &amp; Owner Enrichment Agent</h3>
+                    <p>Turns raw market supply into owner-resolved, channel-ready prospect lists. This productizes the exact workflow Wander has already proven manually.</p>
+                  </div>
+                </div>
+                <div class="pm-touch"><i></i>PM touch: near-zero</div>
+              </div>
+              <div class="agent-columns">
+                <div class="agent-block">
+                  <h4>Automates</h4>
+                  <ul>
+                    <li>Ingests AirDNA-style STR supply and local MLS inventory via feeds, connectors, or approved scrape workflows.</li>
+                    <li>Normalizes addresses, dedupes listings, resolves parcel or assessor records, and distinguishes likely direct owners from managers or entities.</li>
+                    <li>Enriches phone, email, and mailing address data, applies suppression rules, and confidence-scores every record.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Consumes</h4>
+                  <ul>
+                    <li>Market filters, bedroom / quality filters, STR listing supply, local MLS data, assessor / tax sources, and exclusion lists.</li>
+                    <li>YellowPages-style enrichment services or equivalent contact vendors.</li>
+                    <li>Existing owners, opt-outs, DNC / suppression records, and conversion feedback from prior campaigns.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Hands off</h4>
+                  <ul>
+                    <li>Ranked owner lists for lifecycle nurture, sales-call queues, direct-mail drops, and paid retargeting audiences.</li>
+                    <li>Source provenance, match confidence, owner type labels, and segment recommendations.</li>
+                    <li>Always-on replenishment of the owner acquisition pipeline as new supply appears.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="agent-note"><strong>Why it matters:</strong> revenue calculators can lift conversion, but they do not create the list. The upstream wedge is owner resolution plus contact enrichment.</div>
+              <div class="agent-tags"><span class="tag">AirDNA / STR</span><span class="tag">MLS</span><span class="tag">Assessor / tax</span><span class="tag">Enrichment</span><span class="tag">Retargeting audiences</span></div>
+            </article>
+
+            <article class="agent-card glass reveal" id="agent-03">
+              <div class="agent-top">
+                <div class="agent-title">
+                  <div class="agent-number">03</div>
+                  <div class="agent-heading">
+                    <span class="kicker">Prove</span>
+                    <h3>Proof Asset Agent</h3>
+                    <p>Creates the owner-facing surfaces that make the outreach credible: landing pages, performance proof, testimonials, localized copy, and conversion modules.</p>
+                  </div>
+                </div>
+                <div class="pm-touch"><i></i>PM touch: optional review</div>
+              </div>
+              <div class="agent-columns">
+                <div class="agent-block">
+                  <h4>Automates</h4>
+                  <ul>
+                    <li>Generates localized landing pages and proof pages tuned to the target market and owner segment.</li>
+                    <li>Creates case studies, testimonial modules, FAQs, forms, chat entry points, and ad-specific page variants.</li>
+                    <li>Embeds a revenue calculator where useful as one conversion block inside the page system.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Consumes</h4>
+                  <ul>
+                    <li>Brand assets, approved claims, market proof, performance data, photos, reviews, and objection themes.</li>
+                    <li>Audience segments from the data agent.</li>
+                    <li>Conversion feedback from ads, email, and direct mail.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Hands off</h4>
+                  <ul>
+                    <li>Live pages, creative variants, forms, and embedded proof modules aligned to each owner audience.</li>
+                    <li>Retargeting destinations and nurture page experiences.</li>
+                    <li>Consistent messaging blocks that downstream agents can reuse everywhere.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="agent-note"><strong>Important:</strong> the revenue calculator is not a standalone agent. It lives inside the landing-page system as a conversion component.</div>
+              <div class="agent-tags"><span class="tag">Landing pages</span><span class="tag">Case studies</span><span class="tag">Testimonials</span><span class="tag">Embedded calculator</span></div>
+            </article>
+
+            <article class="agent-card glass reveal" id="agent-04">
+              <div class="agent-top">
+                <div class="agent-title">
+                  <div class="agent-number">04</div>
+                  <div class="agent-heading">
+                    <span class="kicker">Acquire</span>
+                    <h3>Campaign Operator Agent</h3>
+                    <p>Launches and optimizes the demand generation layer: Google Search, Meta, retargeting, email acquisition sequences, and audience sync.</p>
+                  </div>
+                </div>
+                <div class="pm-touch"><i></i>PM touch: capped by rules</div>
+              </div>
+              <div class="agent-columns">
+                <div class="agent-block">
+                  <h4>Automates</h4>
+                  <ul>
+                    <li>Builds campaign structures, creatives, audience sets, and ad variants from the proof assets.</li>
+                    <li>Allocates spend across search, Meta, and retargeting based on owner segment and observed conversion.</li>
+                    <li>Pauses weak ads, scales strong ones, and keeps remarketing synced to CRM and website behavior.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Consumes</h4>
+                  <ul>
+                    <li>Scored audiences from the property data agent and on-site engagement signals.</li>
+                    <li>Budget caps and channel eligibility rules from the orchestrator.</li>
+                    <li>Proof pages, creative modules, and offer positioning from the asset agent.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Hands off</h4>
+                  <ul>
+                    <li>Live Google and Meta campaigns, retargeting pools, creative tests, and channel-level pacing.</li>
+                    <li>Audience feedback loops into CRM and reporting.</li>
+                    <li>Meeting-quality optimization rather than vanity-traffic optimization.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="agent-note"><strong>Why it matters:</strong> once owner-resolved data exists, paid media stops being generic traffic and becomes a precision amplification layer.</div>
+              <div class="agent-tags"><span class="tag">Google Search</span><span class="tag">Meta</span><span class="tag">Retargeting</span><span class="tag">Budget pacing</span></div>
+            </article>
+
+            <article class="agent-card glass reveal" id="agent-05">
+              <div class="agent-top">
+                <div class="agent-title">
+                  <div class="agent-number">05</div>
+                  <div class="agent-heading">
+                    <span class="kicker">Capture</span>
+                    <h3>Lifecycle / CRM Agent</h3>
+                    <p>Keeps the entire owner funnel stateful: every lead, every touchpoint, every stage change, and every attribution signal lives in one owner CRM.</p>
+                  </div>
+                </div>
+                <div class="pm-touch"><i></i>PM touch: minimal</div>
+              </div>
+              <div class="agent-columns">
+                <div class="agent-block">
+                  <h4>Automates</h4>
+                  <ul>
+                    <li>Creates records automatically from ads, forms, chat, email, direct mail responses, and outbound sequences.</li>
+                    <li>Moves leads across stages, triggers nurture logic, suppresses converted owners, and routes tasks or meetings.</li>
+                    <li>Maintains attribution, source history, segment state, and retargeting eligibility.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Consumes</h4>
+                  <ul>
+                    <li>Every event from the asset, campaign, conversation, and direct mail layers.</li>
+                    <li>Owner scores, meeting outcomes, proposal status, and contract progress.</li>
+                    <li>Calendar links, routing rules, and suppressions.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Hands off</h4>
+                  <ul>
+                    <li>A clean, continuously updated owner pipeline.</li>
+                    <li>Cross-channel attribution tied to meetings and signed homes.</li>
+                    <li>The source of truth that every other agent reads from and writes to.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="agent-note"><strong>Why it matters:</strong> hands-off acquisition fails if leads disappear between channels. The CRM agent is the memory layer that keeps the system coherent.</div>
+              <div class="agent-tags"><span class="tag">Pipeline</span><span class="tag">Attribution</span><span class="tag">Routing</span><span class="tag">Nurture state</span></div>
+            </article>
+
+            <article class="agent-card glass reveal" id="agent-06">
+              <div class="agent-top">
+                <div class="agent-title">
+                  <div class="agent-number">06</div>
+                  <div class="agent-heading">
+                    <span class="kicker">Convert</span>
+                    <h3>Conversation / SDR Agent</h3>
+                    <p>Handles the frontline interaction with owners: instant responses, follow-up, qualification, objection handling, and calendar booking.</p>
+                  </div>
+                </div>
+                <div class="pm-touch"><i></i>PM touch: exception-based</div>
+              </div>
+              <div class="agent-columns">
+                <div class="agent-block">
+                  <h4>Automates</h4>
+                  <ul>
+                    <li>Replies through email, SMS, chat, or approved call workflows using brand-safe scripts.</li>
+                    <li>Qualifies owners based on home fit, current manager status, timeline, and switching intent.</li>
+                    <li>Books meetings directly, follows up on no-shows, and escalates high-intent opportunities.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Consumes</h4>
+                  <ul>
+                    <li>CRM state, offer history, approved talking points, FAQs, and objection libraries.</li>
+                    <li>Calendar availability and routing logic for the PM or sales rep.</li>
+                    <li>Compliance rules around channel usage, quiet hours, and approvals.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Hands off</h4>
+                  <ul>
+                    <li>Qualified meetings, contact-rate improvement, faster first response, and better follow-up consistency.</li>
+                    <li>Transcripts, qualification signals, and next-step recommendations for the sales layer.</li>
+                    <li>Closed-loop learnings about which owner objections block conversion most often.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="agent-note"><strong>Why it matters:</strong> the first five minutes after an owner raises a hand often decide whether the opportunity becomes a meeting or disappears.</div>
+              <div class="agent-tags"><span class="tag">Email</span><span class="tag">SMS</span><span class="tag">Chat</span><span class="tag">Scheduling</span></div>
+            </article>
+
+            <article class="agent-card glass reveal" id="agent-07">
+              <div class="agent-top">
+                <div class="agent-title">
+                  <div class="agent-number">07</div>
+                  <div class="agent-heading">
+                    <span class="kicker">Physical outreach</span>
+                    <h3>Direct Mail Agent</h3>
+                    <p>Makes physical owner outreach measurable: postcards, letters, creative variants, print / mail routing, and downstream attribution.</p>
+                  </div>
+                </div>
+                <div class="pm-touch"><i></i>PM touch: low</div>
+              </div>
+              <div class="agent-columns">
+                <div class="agent-block">
+                  <h4>Automates</h4>
+                  <ul>
+                    <li>Chooses which owner segments should receive direct mail based on confidence score, property fit, and response history.</li>
+                    <li>Generates postcard and letter copy, design variants, and vendor-ready print files.</li>
+                    <li>Attaches QR codes, vanity URLs, or match-back logic so meetings and signatures tie back to the campaign.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Consumes</h4>
+                  <ul>
+                    <li>Enriched mailing addresses from the data agent and offers from the proof asset agent.</li>
+                    <li>Budget rules and cadence logic from the orchestrator.</li>
+                    <li>Response and attribution data from CRM and campaigns.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Hands off</h4>
+                  <ul>
+                    <li>Mailed drops, creative A/B tests, attribution-ready tracking, and audience suppression for future sends.</li>
+                    <li>Coordinated sequencing with email, calls, and retargeting.</li>
+                    <li>A channel that feels native to PM owner acquisition, not bolted on.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="agent-note"><strong>Why it matters:</strong> once mailing addresses are enriched and scored, direct mail becomes a precise owner-conversion channel instead of a blind batch send.</div>
+              <div class="agent-tags"><span class="tag">Postcards</span><span class="tag">Letters</span><span class="tag">Mail routing</span><span class="tag">Match-back tracking</span></div>
+            </article>
+
+            <article class="agent-card glass reveal" id="agent-08">
+              <div class="agent-top">
+                <div class="agent-title">
+                  <div class="agent-number">08</div>
+                  <div class="agent-heading">
+                    <span class="kicker">Close</span>
+                    <h3>Sales Assist Agent</h3>
+                    <p>Turns a qualified owner conversation into a high-confidence proposal and a nearly ready contract package.</p>
+                  </div>
+                </div>
+                <div class="pm-touch"><i></i>PM touch: human approval at contract</div>
+              </div>
+              <div class="agent-columns">
+                <div class="agent-block">
+                  <h4>Automates</h4>
+                  <ul>
+                    <li>Builds tailored proposals, owner summaries, switching narratives, and property-specific pitch materials.</li>
+                    <li>Compiles objection-handling blocks using proof, benchmarks, and local performance context.</li>
+                    <li>Prepares contract packages and routes them for approval when the owner reaches close stage.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Consumes</h4>
+                  <ul>
+                    <li>Meeting notes, CRM history, property data, owner qualification, and approved templates.</li>
+                    <li>Proof modules and financial assumptions already used throughout the funnel.</li>
+                    <li>Rules for when humans must review before anything goes out.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Hands off</h4>
+                  <ul>
+                    <li>Proposal-ready materials that reduce sales prep time and improve consistency.</li>
+                    <li>Faster transition from meeting to contract.</li>
+                    <li>Cleaner handoff into onboarding once the home signs.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="agent-note"><strong>Why it matters:</strong> the value of an automated top-of-funnel drops quickly if the close-stage materials still require manual assembly from scratch.</div>
+              <div class="agent-tags"><span class="tag">Proposals</span><span class="tag">Objection handling</span><span class="tag">Contracts</span><span class="tag">Sales handoff</span></div>
+            </article>
+
+            <article class="agent-card glass reveal" id="agent-09">
+              <div class="agent-top">
+                <div class="agent-title">
+                  <div class="agent-number">09</div>
+                  <div class="agent-heading">
+                    <span class="kicker">Compound</span>
+                    <h3>Reporting &amp; Optimization Agent</h3>
+                    <p>Summarizes what is working, reallocates budget, flags weak channels, and turns raw campaign data into operating decisions.</p>
+                  </div>
+                </div>
+                <div class="pm-touch"><i></i>PM touch: review optional</div>
+              </div>
+              <div class="agent-columns">
+                <div class="agent-block">
+                  <h4>Automates</h4>
+                  <ul>
+                    <li>Builds a cross-channel performance view tied to meetings, proposals, and signed homes.</li>
+                    <li>Measures owner-resolution rate, bad-contact rate, cost per meeting, and cost per signed home.</li>
+                    <li>Recommends next actions: scale, pause, retarget, enrich more deeply, or change the offer.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Consumes</h4>
+                  <ul>
+                    <li>Campaign data, CRM state, mail response, conversation outcomes, and contract progression.</li>
+                    <li>Spend history and budget caps.</li>
+                    <li>Market and audience segments defined by the orchestrator.</li>
+                  </ul>
+                </div>
+                <div class="agent-block">
+                  <h4>Hands off</h4>
+                  <ul>
+                    <li>A weekly operating brief, next-best actions, and budget reallocation proposals.</li>
+                    <li>A feedback loop that improves owner resolution, messaging, and close rate over time.</li>
+                    <li>The evidence WanderOS needs to justify “hands-off” trust.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="agent-note"><strong>Why it matters:</strong> without continuous learning, the system is just automation. With optimization, it becomes compounding inventory growth infrastructure.</div>
+              <div class="agent-tags"><span class="tag">Attribution</span><span class="tag">Budget reallocation</span><span class="tag">CAC by signed home</span><span class="tag">Weekly brief</span></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="data-engine">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div>
+            <span class="eyebrow">Breakout agent</span>
+            <h2>The owner-resolution engine is the operational wedge.</h2>
+          </div>
+          <p>
+            This is the piece that most competitors still leave fragmented across vendors, spreadsheets, and manual labor. WanderOS should productize it end to end.
+          </p>
+        </div>
+
+        <div class="callout glass reveal">
+          <p>
+            <strong>Manual Wander playbook, now productized:</strong> buy or source a large market supply set, identify the direct owner through county / parcel / tax data, enrich that owner record, then route the opportunity into cold email, direct mail, call queues, retargeting, and lifecycle nurture. In WanderOS, all of that becomes one agentic workflow.
+          </p>
+        </div>
+
+        <div class="pipeline">
+          <div class="step-card reveal">
+            <span class="step-number">Step 01</span>
+            <h3>Ingest supply</h3>
+            <p>Pull STR inventory, MLS listings, and market-level home supply using the target filters that came from the PM prompt.</p>
+          </div>
+          <div class="step-card reveal">
+            <span class="step-number">Step 02</span>
+            <h3>Normalize and dedupe</h3>
+            <p>Clean addresses, match listing variants, group by parcel or property identity, and suppress duplicate opportunities.</p>
+          </div>
+          <div class="step-card reveal">
+            <span class="step-number">Step 03</span>
+            <h3>Resolve ownership</h3>
+            <p>Use assessor, parcel, or tax data to identify the likely owner and separate direct owners from PM-controlled entities.</p>
+          </div>
+          <div class="step-card reveal">
+            <span class="step-number">Step 04</span>
+            <h3>Enrich contact data</h3>
+            <p>Attach likely phones, emails, and mailing addresses using enrichment vendors and confidence-scored matching.</p>
+          </div>
+          <div class="step-card reveal">
+            <span class="step-number">Step 05</span>
+            <h3>Score and route</h3>
+            <p>Rank fit, confidence, and intent, then send the right records to lifecycle, direct mail, SDR, and paid retargeting.</p>
+          </div>
+        </div>
+
+        <div class="source-grid">
+          <div class="source-card reveal"><h3>STR listing supply</h3><p>AirDNA-style inventory or comparable sources to identify homes already operating in the short-term rental market.</p></div>
+          <div class="source-card reveal"><h3>MLS inventory</h3><p>Feeds, connectors, or approved scrape workflows to discover newly listed properties or homes with likely STR potential.</p></div>
+          <div class="source-card reveal"><h3>Assessor / tax data</h3><p>Parcel-level ownership resolution to identify the likely direct owner behind the listing.</p></div>
+          <div class="source-card reveal"><h3>Contact enrichment</h3><p>YellowPages-style enrichment or equivalent vendors to attach outreach-ready emails, phones, and mailing addresses.</p></div>
+          <div class="source-card reveal"><h3>Suppressions</h3><p>Existing clients, opt-outs, DNC records, bad contacts, and prior conversions to keep the system safe and efficient.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="autopilot">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div>
+            <span class="eyebrow">From one prompt</span>
+            <h2>What WanderOS deploys automatically once the PM states the goal.</h2>
+          </div>
+          <p>
+            The PM should not choose between dozens of setup screens. The control plane should decompose the goal into assets, channels, outreach, and next actions.
+          </p>
+        </div>
+
+        <div class="autopilot-layout">
+          <div class="prompt-panel glass reveal">
+            <h3>Autopilot brief</h3>
+            <p>For a market like Destin, the system should turn a single instruction into a full operating plan without requiring a marketing team.</p>
+            <div class="prompt-bullets">
+              <div><strong>Goal:</strong> add more homeowners in a specific market.</div>
+              <div><strong>Target:</strong> premium 3–6 bedroom homes, already operating or newly entering the market.</div>
+              <div><strong>Controls:</strong> monthly budget, approval mode, claims guardrails, calendar destination.</div>
+              <div><strong>Output:</strong> owner-resolved audiences, live outreach, booked meetings, and close-ready proposals.</div>
+            </div>
+          </div>
+
+          <div class="autopilot-card glass reveal">
+            <h3>System outputs</h3>
+            <p>The same owner dataset powers every downstream motion: lifecycle nurture, direct mail, sales calling, and paid retargeting.</p>
+            <div class="deploy-grid">
+              <div class="deploy-card"><h3>Targeted owner dataset</h3><p>Scored lists with owner identity, confidence, enrichment status, and routing tags for sales and lifecycle workflows.</p></div>
+              <div class="deploy-card"><h3>Localized proof pages</h3><p>Landing pages, proof blocks, embedded revenue calculator modules, and ad-specific variants tuned to the segment.</p></div>
+              <div class="deploy-card"><h3>Paid acquisition</h3><p>Google Search, Meta, and retargeting campaigns automatically tied to owner audiences and site engagement.</p></div>
+              <div class="deploy-card"><h3>Lifecycle nurture</h3><p>Email, SMS, chat, and task workflows that respond instantly and keep owners moving through the funnel.</p></div>
+              <div class="deploy-card"><h3>Direct mail</h3><p>Postcards and letters with traceable URLs or QR flows so the physical channel becomes measurable.</p></div>
+              <div class="deploy-card"><h3>Sales handoff</h3><p>Meeting-ready records, proposal drafts, property summaries, and contract-prep packets for the final close stage.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="guardrails">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div>
+            <span class="eyebrow">Trust model</span>
+            <h2>Hands-off does not mean out of control.</h2>
+          </div>
+          <p>
+            A PM needs to feel like the system is doing the work without risking spend, brand claims, data quality, or close-stage approvals.
+          </p>
+        </div>
+
+        <div class="modes-grid">
+          <div class="mode-card glass reveal"><strong>Observe mode</strong><span>Great for the first run. Agents build the market list, plan the funnel, and draft the assets, but nothing launches without a green light.</span></div>
+          <div class="mode-card glass reveal"><strong>Approve mode</strong><span>Default for most PMs. Agents can enrich data, prepare campaigns, and manage lifecycle logic, while launch thresholds and contract sends still require approval.</span></div>
+          <div class="mode-card glass reveal"><strong>Autopilot mode</strong><span>For high-trust accounts. Agents operate within budget caps, claim libraries, source rules, and escalation policies, only surfacing exceptions.</span></div>
+        </div>
+
+        <div class="guardrail-grid">
+          <div class="guardrail-card reveal"><h3>Budget control</h3><p>Daily and monthly spend caps, change thresholds, and automatic pacing rules for paid channels.</p></div>
+          <div class="guardrail-card reveal"><h3>Brand-safe claims</h3><p>Only approved proof points, testimonials, and performance language can be used in pages, ads, emails, and mailers.</p></div>
+          <div class="guardrail-card reveal"><h3>Data provenance</h3><p>Every owner record should retain source lineage, match confidence, and suppression status before it enters outreach.</p></div>
+          <div class="guardrail-card reveal"><h3>Compliance layer</h3><p>Eligibility checks, suppression management, consent logic, channel restrictions, and human approval for contract-stage materials.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="metrics">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div>
+            <span class="eyebrow">What success looks like</span>
+            <h2>Measure signed homes, speed, data quality, and autonomous execution — not just leads.</h2>
+          </div>
+          <p>
+            The system should be evaluated on whether it compounds a PM’s business, not whether it generated a pile of unqualified activity.
+          </p>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-card reveal"><h3>Inventory growth</h3><p>Net new signed homes, new AUM, incremental booking value added, and cost per signed home.</p></div>
+          <div class="metric-card reveal"><h3>Speed</h3><p>Prompt-to-plan time, prompt-to-first-live-campaign time, lead response time, and days to first booked meeting.</p></div>
+          <div class="metric-card reveal"><h3>Data quality</h3><p>Listing coverage, owner-resolution rate, enrichment coverage, suppression accuracy, and bounce / bad-number rate.</p></div>
+          <div class="metric-card reveal"><h3>Autonomy</h3><p>Share of tasks completed without PM intervention, campaigns self-optimized, and exception rate by workstream.</p></div>
+          <div class="metric-card reveal"><h3>Conversion</h3><p>Lead-to-meeting, meeting-to-proposal, proposal-to-signed-home, and channel-level CAC with payback.</p></div>
+          <div class="metric-card reveal"><h3>System health</h3><p>Page conversion, email / SMS engagement, ad efficiency, mail response rate, and attribution confidence.</p></div>
+        </div>
+
+        <div class="delta-grid">
+          <div class="delta-card reveal"><h3>Data tool</h3><p>Finds owners fast, but often stops before nurture, proof, and close-stage execution.</p></div>
+          <div class="delta-card reveal"><h3>CRM automation tool</h3><p>Handles follow-up well, but usually depends on someone else to create the marketable list.</p></div>
+          <div class="delta-card reveal"><h3>Agency service</h3><p>Sells outcomes, but keeps the operating system outside the PM’s own control plane.</p></div>
+          <div class="delta-card reveal"><h3>WanderOS goal layer</h3><p>Combines owner discovery, enrichment, conversion assets, outreach, CRM, and optimization inside one product.</p></div>
+        </div>
+
+        <div class="footer-card glass reveal">
+          <h2>WanderOS should sell a result: “give us the market and the goal — we will go find the owners.”</h2>
+          <p>
+            That positioning is stronger than another CRM, stronger than another landing-page builder, and stronger than a managed service wrapped around generic tools. The breakthrough is the owner-resolution engine plus the agent network behind it: one prompt, one strategy page, one control center, and a chain of specialized agents doing the real work.
+          </p>
+          <div class="footer-note">Built from the WanderOS inventory-growth brief and the revised product framing focused on STR / MLS sourcing, owner resolution, enrichment, lifecycle automation, retargeting, direct mail, and close-stage assistance.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('in');
+      });
+    }, { threshold: 0.14 });
+    reveals.forEach((el) => revealObserver.observe(el));
+
+    const agentSections = document.querySelectorAll('.agent-card');
+    const navLinks = document.querySelectorAll('.rail-link');
+    const navMap = {};
+    navLinks.forEach((link) => { navMap[link.getAttribute('href').slice(1)] = link; });
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach((link) => link.classList.remove('active'));
+        const active = navMap[entry.target.id];
+        if (active) active.classList.add('active');
+      });
+    }, { rootMargin: '-30% 0px -55% 0px', threshold: 0.01 });
+
+    agentSections.forEach((section) => sectionObserver.observe(section));
+  </script>
+</body>
+</html>
